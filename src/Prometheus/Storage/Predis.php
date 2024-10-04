@@ -24,6 +24,7 @@ final class Predis extends Redis
         'read_timeout' => '10',
         'persistent' => 0,
         'password' => null,
+        'prefix' => 'prom_predis:'
     ];
 
     public function __construct(array $options = [])
@@ -32,7 +33,7 @@ final class Predis extends Redis
 
         parent::__construct($options);
 
-        $this->redis = new Client($this->options);
+        $this->redis = new Client($this->options, ['prefix' => $options['prefix']]);
     }
 
     public static function fromClient(Client $redis): self
@@ -85,8 +86,7 @@ final class Predis extends Redis
 
     protected function prefix(string $key): string
     {
-        // the predis is doing key prefixing on its own
-        return '';
+        return $this->options['prefix'];
     }
 
     protected function setParams(array $input): array
